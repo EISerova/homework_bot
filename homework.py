@@ -8,7 +8,7 @@ import telegram
 from dotenv import load_dotenv
 
 from exceptions import (CheckResponseError, CheckTokensError, ParseStatusError,
-                        ResponseError, SendMessageError)
+                        ResponseError, SendMessageError, GetApiError)
 
 load_dotenv()
 
@@ -52,9 +52,9 @@ def get_api_answer(current_timestamp):
             logging.error('Эндпоинт Яндекс.практикума недоступен')
             raise ResponseError('Эндпоинт Яндекс.практикума недоступен')
         return response.json()
-    except Exception as error:
-        logging.error('Ошибка')
-        raise ResponseError('Ошибка при запросе API')
+    except GetApiError('Ошибка при запросе API'):
+        logging.error('Ошибка при запросе API')
+        raise GetApiError('Ошибка при запросе API')
 
 
 def check_response(response):

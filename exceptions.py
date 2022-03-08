@@ -26,3 +26,9 @@ class CheckTokensError(Exception):
     """Отсутствует один из токенов."""
 
     pass
+
+
+class GetApiError(Exception):
+    """Ошибка при запросе API."""
+
+    pass
