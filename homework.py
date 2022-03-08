@@ -16,7 +16,8 @@ load_dotenv()
 PRACTICUM_TOKEN: str = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN: str = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID: int = os.getenv('TELEGRAM_CHAT_ID')
-ENDPOINT: str = os.getenv('ENDPOINT')
+
+ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 
 RESPONSE_KEY: list = ['homeworks', 'current_date']
 RETRY_TIME: int = 600
