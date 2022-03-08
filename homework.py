@@ -53,8 +53,8 @@ def get_api_answer(current_timestamp):
             raise ResponseError('Эндпоинт Яндекс.практикума недоступен')
         return response.json()
     except Exception as error:
-        logging.error(f'Ошибка при запросе, ответ API: {error}')
-        raise ResponseError('Ошибка при запросе, ответ API')
+        logging.error('Ошибка')
+        raise ResponseError('Ошибка при запросе API')
 
 
 def check_response(response):
