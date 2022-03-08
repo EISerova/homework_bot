@@ -1,2 +1,18 @@
-# homework_bot
-python telegram bot
+# Бот-ассистент
+## _Сделан в рамках учебы в Яндекс-Практикуме_
+
+![N|Solid](https://puremodplay.com/wp-content/uploads/2021/10/download-telegram-80x80.webp)![N|Solid](https://i116.fastpic.org/big/2022/0308/dc/1032585c66dfa90bae8e0197ac6ebbdc.jpg)
+
+## Обзор
+Telegram-бот, который обращается к API сервиса Практикум.Домашка и узнает статус домашней работы
+
+- Делает запрос к API (раз в 10 минут).
+- Проверяет ответ.
+- Если есть обновления, отправляет статус через сообщение в Telegram.
+
+## Технологии
+
+При работе над ботом я использовала:
+
+- Python - бот написан на языке программирования Python.
+- Python-telegram-bot - Python-библиотека для работы с Bot API
