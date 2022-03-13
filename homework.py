@@ -16,7 +16,7 @@ load_dotenv()
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-TOKENS = ['PRACTICUM_TOKEN', 'TELEGRAM_TOKEN', 'TELEGRAM_CHAT_ID']
+TOKENS = ('PRACTICUM_TOKEN', 'TELEGRAM_TOKEN', 'TELEGRAM_CHAT_ID')
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -33,12 +33,12 @@ ERROR_SEND_MESSAGE = 'Сообщение "{message}" не отправлено T
 ERROR_ENDPOINT = (
     'Сервер вернул некорректный код ответа: {response},'
     'параметры запроса: headers - {headers},'
-    'params – {params}, endpoint - {endpoint}'
+    'params – {params}, endpoint - {url}'
 )
 ERROR_GET_API = (
     'Запрос не выполнен: {error},'
     'параметры запроса: headers - {headers},'
-    'params – {params}, endpoint - {endpoint}'
+    'params – {params}, endpoint - {url}'
 )
 ERROR_RESPONSE_TYPE = 'json-ответ - не словарь, полученный тип данных: {type}'
 ERROR_HOMEWORKS_TYPE = 'В json-ответе тип "homeworks" - не список, а: {type}'
@@ -52,25 +52,22 @@ ERROR_MAIN = 'Работа программы остановлена: {error}'
 RESPONSE_DENIED = (
     'Запрос отклонен сервером, причина: {key} : {denied}.'
     'Параметры запроса: headers - {headers},'
-    'params – {params}, endpoint - {endpoint}'
+    'params – {params}, endpoint - {url}'
 )
 
 
 def send_message(bot, message):
     """Отправляет сообщение в Telegram."""
-    try:
-        bot.send_message(TELEGRAM_CHAT_ID, message)
-        log.info(INFO_SEND_MESSAGE.format(message=message))
-    except Exception as err:
-        log.exception(ERROR_SEND_MESSAGE.format(message=message, error=err))
+    bot.send_message(TELEGRAM_CHAT_ID, message)
+    log.info(INFO_SEND_MESSAGE.format(message=message))
 
 
 def get_api_answer(current_timestamp):
     """Делает запрос к эндпоинту API-сервиса и возвращает ответ."""
     params = {'from_date': current_timestamp}
-    response_params = dict(endpoint=ENDPOINT, headers=HEADERS, params=params)
+    response_params = dict(url=ENDPOINT, headers=HEADERS, params=params)
     try:
-        response = requests.get(ENDPOINT, headers=HEADERS, params=params)
+        response = requests.get(**response_params)
     except RequestException as err:
         raise ConnectionError(
             ERROR_GET_API.format(error=err, **response_params)
@@ -121,11 +118,10 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет доступность переменных окружения."""
-    error_token = [token for token in TOKENS if not globals()[token]]
-    if error_token:
-        logging.critical(CRITICAL_TOKEN.format(token=error_token))
-        return False
-    return True
+    error_tokens = [token for token in TOKENS if not globals()[token]]
+    if error_tokens:
+        logging.critical(CRITICAL_TOKEN.format(token=error_tokens))
+    return len(error_tokens) == 0
 
 
 def main():
@@ -139,12 +135,18 @@ def main():
             response: dict = get_api_answer(current_timestamp)
             homework: list = check_response(response)
             if homework:
-                send_message(bot, parse_status(homework[0]))
-                current_timestamp: int = response.get(
-                    'current_date', current_timestamp
-                )
-        except Exception as error:
-            text = ERROR_MAIN.format(error=error)
+                try:
+                    message = parse_status(homework[0])
+                    send_message(bot, message)
+                    current_timestamp: int = response.get(
+                        'current_date', current_timestamp
+                    )
+                except Exception as err:
+                    log.exception(
+                        ERROR_SEND_MESSAGE.format(message=message, error=err)
+                    )
+        except Exception as err:
+            text = ERROR_MAIN.format(error=err)
             log.exception(text)
             send_message(bot, text)
         time.sleep(RETRY_TIME)
