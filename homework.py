@@ -58,8 +58,12 @@ RESPONSE_DENIED = (
 
 def send_message(bot, message):
     """Отправляет сообщение в Telegram."""
-    bot.send_message(TELEGRAM_CHAT_ID, message)
-    log.info(INFO_SEND_MESSAGE.format(message=message))
+    try:
+        bot.send_message(TELEGRAM_CHAT_ID, message)
+        log.info(INFO_SEND_MESSAGE.format(message=message))
+        return True
+    except Exception as err:
+        log.exception(ERROR_SEND_MESSAGE.format(message=message, error=err))
 
 
 def get_api_answer(current_timestamp):
@@ -121,7 +125,7 @@ def check_tokens():
     error_tokens = [token for token in TOKENS if not globals()[token]]
     if error_tokens:
         logging.critical(CRITICAL_TOKEN.format(token=error_tokens))
-    return len(error_tokens) == 0
+    return not error_tokens
 
 
 def main():
@@ -135,18 +139,12 @@ def main():
             response: dict = get_api_answer(current_timestamp)
             homework: list = check_response(response)
             if homework:
-                try:
-                    message = parse_status(homework[0])
-                    send_message(bot, message)
+                if send_message(bot, parse_status(homework[0])):
                     current_timestamp: int = response.get(
                         'current_date', current_timestamp
                     )
-                except Exception as err:
-                    log.exception(
-                        ERROR_SEND_MESSAGE.format(message=message, error=err)
-                    )
-        except Exception as err:
-            text = ERROR_MAIN.format(error=err)
+        except Exception as error:
+            text = ERROR_MAIN.format(error=error)
             log.exception(text)
             send_message(bot, text)
         time.sleep(RETRY_TIME)
