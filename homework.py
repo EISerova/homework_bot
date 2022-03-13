@@ -64,6 +64,7 @@ def send_message(bot, message):
         return True
     except Exception as err:
         log.exception(ERROR_SEND_MESSAGE.format(message=message, error=err))
+        return False
 
 
 def get_api_answer(current_timestamp):
