@@ -6,6 +6,7 @@ from http import HTTPStatus
 import requests
 import telegram
 from dotenv import load_dotenv
+from logging.handlers import RotatingFileHandler
 from requests.exceptions import RequestException
 
 from exceptions import (ResponseDeniedError, ResponseKeyError,
@@ -158,7 +159,11 @@ if __name__ == '__main__':
     formatter = logging.Formatter(
         '%(asctime)s - %(levelname)s - %(message)s - %(funcName)s - %(lineno)d'
     )
-    file_handler = logging.FileHandler(__file__ + '.log')
+    file_handler = RotatingFileHandler(
+        __file__ + '.log',
+        maxBytes=50000000,
+        backupCount=5
+    )
     stream_heandler = logging.StreamHandler()
     file_handler.setFormatter(formatter)
     stream_heandler.setFormatter(formatter)
