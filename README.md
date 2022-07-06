@@ -1,7 +1,7 @@
 # Бот-ассистент
 ## _Сделан в рамках учебы в Яндекс-Практикуме_
 
-(https://puremodplay.com/wp-content/uploads/2021/10/download-telegram-80x80.webp)
+![N|Solid](https://puremodplay.com/wp-content/uploads/2021/10/download-telegram-80x80.webp)
 
 ## Обзор
 Telegram-бот, который обращается к API сервиса Практикум.Домашка и узнает статус домашней работы
